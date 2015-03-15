@@ -53,7 +53,7 @@ public class EcranJeuPartieSolo implements Screen {
         this.jeu = monJeu;
         this.skin = jeu.manager.get("data/uiskin/uiskin.json",Skin.class);
         plateau = new Plateau();
-        this.cellules = new Vector<>();
+        this.cellules = new Vector<ImageButton>();
 
         //Camera
         camera = new OrthographicCamera();
