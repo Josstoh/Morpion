@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -31,7 +32,7 @@ public class EcranJeuPartieSolo implements Screen {
     private OrthographicCamera camera;
     private Stage stage;
     private Plateau plateau;
-    private Vector<Cellule> cellules;
+    private Vector<ImageButton> cellules;
     public boolean J1AJoue = false;
     private int numTour = 1;
     Skin skin;
@@ -52,7 +53,7 @@ public class EcranJeuPartieSolo implements Screen {
         this.jeu = monJeu;
         this.skin = jeu.manager.get("data/uiskin/uiskin.json",Skin.class);
         plateau = new Plateau();
-        this.cellules = new Vector<Cellule>();
+        this.cellules = new Vector<>();
 
         //Camera
         camera = new OrthographicCamera();
@@ -73,7 +74,9 @@ public class EcranJeuPartieSolo implements Screen {
         Table grille = new Table(skin);
         grille.setSize(500,500);
         grille.setBackground("plateau");
-        grille.add().row();
+        ImageButton iB = new ImageButton(skin);
+        iB.setBackground(getDrawableFromGrille(plateau.grille[0][0]));
+        grille.add(iB).row();
         grille.add().row();
         grille.add();
         titre = new Label("Morpion",labelStyle);
@@ -94,163 +97,11 @@ public class EcranJeuPartieSolo implements Screen {
         table.add(joueur2).row();
         //joueur2.setPosition(500,200);
         table.debug();
-        int i = 0, j;
-        while(i<3)
-        {
-            j = 0;
-            while(j<3)
-            {
 
-                Cellule cellule = new Cellule(getDrawableFromGrille(plateau.grille[i][j]), i, j);
-                int j2 = 0;
-                switch (j)
-                {
-                    case 0:j2 = 2;
-                        break;
-                    case 1: j2 = 1;
-                        break;
-                    case 2: j2 = 0;
-                        break;
 
-                }
-                cellule.setBounds(60 + i * 600 / 3, 400 + j2 * 600 / 3, 200, 200);
-                System.out.println("i"+ i +" j" +j+ " x " + (60+i*600/3) + " y " + (400+j2*600/3));
 
-                cellule.addListener(new ClickListener() {
-                    @Override
-                    public void clicked(InputEvent event, float x, float y) {
-                        System.out.println(event.getTarget());
-                        Actor a = event.getTarget();
-                        Cellule c = null;
-                        int caseEn = 0;
 
-                        switch (caseEn) {
-                            case 0:
-                                if (a == cellules.get(0).getImage()) {
-                                    c = cellules.get(0);
-                                    if (plateau.grille[c.getposX()][c.getposY()] != 0) {
-                                        // déjà jouer
-                                        System.out.println("Déjà jouer !");
-                                    } else {
-                                        plateau.jouerSymbole(c.getposX(), c.getposY(), 1);
-                                        J1AJoue = true;
-                                    }
-                                    break;
-                                }
-                            case 1:
-                                if (a == cellules.get(1).getImage()) {
-                                    c = cellules.get(1);
-                                    if (plateau.grille[c.getposX()][c.getposY()] != 0) {
-                                        // déjà jouer
-                                        System.out.println("Déjà jouer !");
-                                    } else {
-                                        plateau.jouerSymbole(c.getposX(), c.getposY(), 1);
-                                        J1AJoue = true;
-                                    }
-                                    break;
-                                }
-                            case 2:
-                                if (a == cellules.get(2).getImage()) {
-                                    c = cellules.get(2);
-                                    if (plateau.grille[c.getposX()][c.getposY()] != 0) {
-                                        // déjà jouer
-                                        System.out.println("Déjà jouer !");
-                                    } else {
-                                        plateau.jouerSymbole(c.getposX(), c.getposY(), 1);
-                                        J1AJoue = true;
-                                    }
-                                    break;
-                                }
-                            case 3:
-                                if (a == cellules.get(3).getImage()) {
-                                    c = cellules.get(3);
-                                    if (plateau.grille[c.getposX()][c.getposY()] != 0) {
-                                        // déjà jouer
-                                        System.out.println("Déjà jouer !");
-                                    } else {
-                                        plateau.jouerSymbole(c.getposX(), c.getposY(), 1);
-                                        J1AJoue = true;
-                                    }
-                                    break;
-                                }
-                            case 4:
-                                if (a == cellules.get(4).getImage()) {
-                                    c = cellules.get(4);
-                                    if (plateau.grille[c.getposX()][c.getposY()] != 0) {
-                                        // déjà jouer
-                                        System.out.println("Déjà jouer !");
-                                    } else {
-                                        plateau.jouerSymbole(c.getposX(), c.getposY(), 1);
-                                        J1AJoue = true;
-                                    }
-                                    break;
-                                }
-                            case 5:
-                                if (a == cellules.get(5).getImage()) {
-                                    c = cellules.get(5);
-                                    if (plateau.grille[c.getposX()][c.getposY()] != 0) {
-                                        // déjà jouer
-                                        System.out.println("Déjà jouer !");
-                                    } else {
-                                        plateau.jouerSymbole(c.getposX(), c.getposY(), 1);
-                                        J1AJoue = true;
-                                    }
-                                    break;
-                                }
-                            case 6:
-                                if (a == cellules.get(6).getImage()) {
-                                    c = cellules.get(6);
-                                    if (plateau.grille[c.getposX()][c.getposY()] != 0) {
-                                        // déjà jouer
-                                        System.out.println("Déjà jouer !");
-                                    } else {
-                                        plateau.jouerSymbole(c.getposX(), c.getposY(), 1);
-                                        J1AJoue = true;
-                                    }
-                                    break;
-                                }
-                            case 7:
-                                if (a == cellules.get(7).getImage()) {
-                                    c = cellules.get(7);
-                                    if (plateau.grille[c.getposX()][c.getposY()] != 0) {
-                                        // déjà jouer
-                                        System.out.println("Déjà jouer !");
-                                    } else {
-                                        plateau.jouerSymbole(c.getposX(), c.getposY(), 1);
-                                        J1AJoue = true;
-                                    }
-                                    break;
-                                }
-                            case 8:
-                                if (a == cellules.get(8).getImage()) {
-                                    c = cellules.get(8);
-                                    if (plateau.grille[c.getposX()][c.getposY()] != 0) {
-                                        // déjà jouer
-                                        System.out.println("Déjà jouer !");
-                                    } else {
-                                        plateau.jouerSymbole(c.getposX(), c.getposY(), 1);
-                                        J1AJoue = true;
-                                    }
-                                    break;
-                                }
-                        }
-                        if (c != null) {
-                            System.out.println("click, x:" + c.getposX() + " y:" + c.getposY());
-                        }
-                    }
-                });
-                cellules.add(cellule);
 
-                j++;
-            }
-            i++;
-        }
-
-        for(Cellule c : cellules)
-        {
-            stage.addActor(c.image);
-
-        }
         imgPlateau = new Sprite(skin.getSprite("plateau"));
         imgPlateau.setBounds(60,400,600,600);
 
@@ -343,7 +194,7 @@ public class EcranJeuPartieSolo implements Screen {
     public void render(float delta) {
         Gdx.gl.glClearColor(0.1f, 0.25f, 0.5f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        MAJCellules();
+        //MAJCellules();
         if(!J1AJoue)
             tour.setText("Votre tour : " +numTour);
         else
@@ -356,11 +207,7 @@ public class EcranJeuPartieSolo implements Screen {
 
 
         //imgPlateau.draw(jeu.batch,1);
-        for(Cellule c : cellules)
-        {
-            c.draw(jeu.batch);
 
-        }
 
         jeu.batch.end();
         stage.act(Gdx.graphics.getDeltaTime());
@@ -422,9 +269,9 @@ public class EcranJeuPartieSolo implements Screen {
             for(int j : i)
             {
                 Cellule tmp;
-                tmp = cellules.get(it);
-                tmp.setDrawable(getDrawableFromGrille(j));
-                cellules.set(it,tmp);
+                //tmp = cellules.get(it);
+                //tmp.setDrawable(getDrawableFromGrille(j));
+               // cellules.set(it,tmp);
                 it++;
             }
         }
