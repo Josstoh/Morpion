@@ -1,0 +1,47 @@
+
+symboles.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+plateau
+  rotate: false
+  xy: 1, 333
+  size: 512, 512
+  orig: 512, 512
+  offset: 0, 0
+  index: -1
+0
+  rotate: false
+  xy: 1, 167
+  size: 164, 164
+  orig: 164, 164
+  offset: 0, 0
+  index: -1
+croix_bleu
+  rotate: false
+  xy: 515, 681
+  size: 164, 164
+  orig: 164, 164
+  offset: 0, 0
+  index: -1
+croix_rouge
+  rotate: false
+  xy: 1, 1
+  size: 164, 164
+  orig: 164, 164
+  offset: 0, 0
+  index: -1
+rond_bleu
+  rotate: false
+  xy: 167, 167
+  size: 164, 164
+  orig: 164, 164
+  offset: 0, 0
+  index: -1
+rond_rouge
+  rotate: false
+  xy: 515, 515
+  size: 164, 164
+  orig: 164, 164
+  offset: 0, 0
+  index: -1

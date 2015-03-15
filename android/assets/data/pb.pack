@@ -1,0 +1,21 @@
+
+pb.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+default-scroll
+  rotate: false
+  xy: 1, 1
+  size: 20, 20
+  split: 2, 2, 2, 2
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+default-round
+  rotate: false
+  xy: 23, 1
+  size: 12, 20
+  split: 5, 5, 5, 4
+  orig: 12, 20
+  offset: 0, 0
+  index: -1
