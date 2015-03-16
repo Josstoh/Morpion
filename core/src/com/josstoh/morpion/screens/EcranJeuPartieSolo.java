@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -47,6 +48,9 @@ public class EcranJeuPartieSolo implements Screen {
     //Sprite
     Sprite imgPlateau;
 
+    // Image
+    Image i1,i2,i3,i4,i5,i6,i7,i8,i9;
+
 
     public EcranJeuPartieSolo(Jeu monJeu)
     {
@@ -72,13 +76,144 @@ public class EcranJeuPartieSolo implements Screen {
 
         // Label
         Table grille = new Table(skin);
-        grille.setSize(500,500);
+        grille.setSize(500, 500);
         grille.setBackground("plateau");
-        ImageButton iB = new ImageButton(skin);
-        iB.setBackground(getDrawableFromGrille(plateau.grille[0][0]));
-        grille.add(iB).row();
-        grille.add().row();
-        grille.add();
+        i1 = new Image(getDrawableFromGrille(plateau.grille[0][0]));
+        i1.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (plateau.grille[0][0] != 0) {
+                    // déjà jouer
+                    System.out.println("Déjà jouer !");
+                } else {
+                    System.out.println("appuyer");
+                    plateau.jouerSymbole(0,0,1);
+                    J1AJoue = true;
+                }
+
+            }
+        });
+        grille.add(i1);
+        i2 = new Image(getDrawableFromGrille(plateau.grille[0][1]));
+        i2.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (plateau.grille[0][1] != 0) {
+                    // déjà jouer
+                    System.out.println("Déjà jouer !");
+                } else {
+                    System.out.println("appuyer");
+                    plateau.jouerSymbole(0,1,1);
+                    J1AJoue = true;
+                }
+            }
+        });
+        grille.add(i2);
+        i3 = new Image(getDrawableFromGrille(plateau.grille[0][2]));
+        i3.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (plateau.grille[0][2] != 0) {
+                    // déjà jouer
+                    System.out.println("Déjà jouer !");
+                } else {
+                    System.out.println("appuyer");
+                    plateau.jouerSymbole(0,2,1);
+                    J1AJoue = true;
+                }
+            }
+        });
+        grille.add(i3).row();
+        i4 = new Image(getDrawableFromGrille(plateau.grille[1][0]));
+        i4.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (plateau.grille[1][0] != 0) {
+                    // déjà jouer
+                    System.out.println("Déjà jouer !");
+                } else {
+                    System.out.println("appuyer");
+                    plateau.jouerSymbole(1,0,1);
+                    J1AJoue = true;
+                }
+            }
+        });
+        grille.add(i4);
+        i5 = new Image(getDrawableFromGrille(plateau.grille[1][1]));
+        i5.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (plateau.grille[0][1] != 0) {
+                    // déjà jouer
+                    System.out.println("Déjà jouer !");
+                } else {
+                    System.out.println("appuyer");
+                    plateau.jouerSymbole(1,1,1);
+                    J1AJoue = true;
+                }
+            }
+        });
+        grille.add(i5);
+        i6 = new Image(getDrawableFromGrille(plateau.grille[1][2]));
+        i6.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (plateau.grille[0][2] != 0) {
+                    // déjà jouer
+                    System.out.println("Déjà jouer !");
+                } else {
+                    System.out.println("appuyer");
+                    plateau.jouerSymbole(1,2,1);
+                    J1AJoue = true;
+                }
+            }
+        });
+        grille.add(i6).row();
+        i7 = new Image(getDrawableFromGrille(plateau.grille[2][0]));
+        i7.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (plateau.grille[2][0] != 0) {
+                    // déjà jouer
+                    System.out.println("Déjà jouer !");
+                } else {
+                    System.out.println("appuyer");
+                    plateau.jouerSymbole(2,0,1);
+                    J1AJoue = true;
+                }
+            }
+        });
+        grille.add(i7);
+        i8 = new Image(getDrawableFromGrille(plateau.grille[2][1]));
+        i8.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (plateau.grille[2][1] != 0) {
+                    // déjà jouer
+                    System.out.println("Déjà jouer !");
+                } else {
+                    System.out.println("appuyer");
+                    plateau.jouerSymbole(2,1,1);
+                    J1AJoue = true;
+                }
+            }
+        });
+        grille.add(i8);
+        i9 = new Image(getDrawableFromGrille(plateau.grille[2][2]));
+        i9.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (plateau.grille[2][2] != 0) {
+                    // déjà jouer
+                    System.out.println("Déjà jouer !");
+                } else {
+                    System.out.println("appuyer");
+                    plateau.jouerSymbole(2,2,1);
+                    J1AJoue = true;
+                }
+            }
+        });
+        grille.add(i9);
         titre = new Label("Morpion",labelStyle);
         table.add(titre).expandX().pad(30).colspan(3).row();
         //titre.setPosition(350,1200,Align.center);
@@ -194,7 +329,7 @@ public class EcranJeuPartieSolo implements Screen {
     public void render(float delta) {
         Gdx.gl.glClearColor(0.1f, 0.25f, 0.5f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        //MAJCellules();
+        MAJCellules();
         if(!J1AJoue)
             tour.setText("Votre tour : " +numTour);
         else
@@ -264,17 +399,15 @@ public class EcranJeuPartieSolo implements Screen {
 
     private void MAJCellules()
     {
-        int it =0;
-        for(int[] i : plateau.grille){
-            for(int j : i)
-            {
-                Cellule tmp;
-                //tmp = cellules.get(it);
-                //tmp.setDrawable(getDrawableFromGrille(j));
-               // cellules.set(it,tmp);
-                it++;
-            }
-        }
+        i1.setDrawable(getDrawableFromGrille(plateau.grille[0][0]));
+        i2.setDrawable(getDrawableFromGrille(plateau.grille[0][1]));
+        i3.setDrawable(getDrawableFromGrille(plateau.grille[0][2]));
+        i4.setDrawable(getDrawableFromGrille(plateau.grille[1][0]));
+        i5.setDrawable(getDrawableFromGrille(plateau.grille[1][1]));
+        i6.setDrawable(getDrawableFromGrille(plateau.grille[1][2]));
+        i7.setDrawable(getDrawableFromGrille(plateau.grille[2][0]));
+        i8.setDrawable(getDrawableFromGrille(plateau.grille[2][1]));
+        i9.setDrawable(getDrawableFromGrille(plateau.grille[2][2]));
     }
 }
 
