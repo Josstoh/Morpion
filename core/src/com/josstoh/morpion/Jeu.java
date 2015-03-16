@@ -68,7 +68,6 @@ public class Jeu extends Game {
         Log.i(TAG, "dispose batch et font");
         batch.dispose();
         manager.dispose();
-        //Assets.symboles.dispose();
     }
 
 

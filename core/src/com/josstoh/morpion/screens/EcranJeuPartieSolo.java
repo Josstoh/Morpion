@@ -76,8 +76,9 @@ public class EcranJeuPartieSolo implements Screen {
 
         // Label
         Table grille = new Table(skin);
-        grille.setSize(500, 500);
+        grille.setSize(600, 600);
         grille.setBackground("plateau");
+        grille.defaults().width(200).height(200);
         i1 = new Image(getDrawableFromGrille(plateau.grille[0][0]));
         i1.addListener(new ClickListener(){
             @Override
@@ -108,7 +109,7 @@ public class EcranJeuPartieSolo implements Screen {
                 }
             }
         });
-        grille.add(i2);
+        grille.add(i2).uniform();
         i3 = new Image(getDrawableFromGrille(plateau.grille[0][2]));
         i3.addListener(new ClickListener(){
             @Override
@@ -143,7 +144,7 @@ public class EcranJeuPartieSolo implements Screen {
         i5.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if (plateau.grille[0][1] != 0) {
+                if (plateau.grille[1][1] != 0) {
                     // déjà jouer
                     System.out.println("Déjà jouer !");
                 } else {
@@ -158,7 +159,7 @@ public class EcranJeuPartieSolo implements Screen {
         i6.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if (plateau.grille[0][2] != 0) {
+                if (plateau.grille[1][2] != 0) {
                     // déjà jouer
                     System.out.println("Déjà jouer !");
                 } else {
@@ -216,22 +217,18 @@ public class EcranJeuPartieSolo implements Screen {
         grille.add(i9);
         titre = new Label("Morpion",labelStyle);
         table.add(titre).expandX().pad(30).colspan(3).row();
-        //titre.setPosition(350,1200,Align.center);
         tour = new Label("Tour " + numTour,labelStyle);
         table.add(tour).colspan(3).pad(30).row();
-        table.add(grille).colspan(3).row();
-        //tour.setPosition(250,1100);
+        table.add().height(100).row();
+        table.add(grille).width(600).height(600).colspan(3).row();
         joueur1 = new Label("Joueur 1",labelStyle);
         table.add(joueur1);
-        //joueur1.setPosition(100,200);
         vs = new Label("Vs",labelStyle);
         table.add(vs).align(Align.center);
-        //vs.setPosition(300,350,Align.cnter);
-
         joueur2 = new Label("Ordinateur",labelStyle);
         table.add(joueur2).row();
-        //joueur2.setPosition(500,200);
         table.debug();
+        grille.debug();
 
 
 
@@ -378,6 +375,8 @@ public class EcranJeuPartieSolo implements Screen {
     @Override
     public void dispose() {
         stage.dispose();
+        plateau = null;
+
     }
 
     Drawable getDrawableFromGrille(int i) {
