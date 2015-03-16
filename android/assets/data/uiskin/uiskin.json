@@ -1,5 +1,6 @@
 {
 com.badlogic.gdx.graphics.Color: {
+	noir: { a: 1 },
 	Blanc: { r: 1, g: 1, b: 1, a: 1 },
 	Rouge: { r: 1, a: 1 },
 	"Gris clair": { r: 0.8, g: 0.8, b: 0.8, a: 1 },
@@ -17,7 +18,7 @@ com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
 	}
 },
 com.badlogic.gdx.scenes.scene2d.ui.ProgressBar$ProgressBarStyle: {
-	default: { background: default-scroll, knobBefore: default-round-large }
+	default: { background: default-scroll, knobBefore: default-round }
 },
 com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 	default: {
@@ -60,8 +61,7 @@ com.badlogic.gdx.scenes.scene2d.ui.Window$WindowStyle: {
 	dialog: {
 		background: default_rec_down,
 		titleFont: font_calibril_30pt,
-		titleFontColor: { a: 1, r: 1 },
-		stageBackground: dialogDim
+		titleFontColor: { a: 1, r: 1 }
 	}
 },
 com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle: {

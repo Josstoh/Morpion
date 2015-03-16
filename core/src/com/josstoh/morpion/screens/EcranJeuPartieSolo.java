@@ -221,7 +221,7 @@ public class EcranJeuPartieSolo implements Screen {
         table.add(tour).colspan(3).pad(30).row();
         table.add().height(100).row();
         table.add(grille).width(600).height(600).colspan(3).row();
-        joueur1 = new Label("Joueur 1",labelStyle);
+        joueur1 = new Label("Vous",labelStyle);
         table.add(joueur1);
         vs = new Label("Vs",labelStyle);
         table.add(vs).align(Align.center);
@@ -303,6 +303,7 @@ public class EcranJeuPartieSolo implements Screen {
                         switch((Integer)obj)
                         {
                             case 0:     jeu.setScreen(new EcranJeuPartieSolo(jeu));
+                                System.out.println("hello");
                                         dispose();
                                         break;
                             case 1:     jeu.setScreen(new MenuAccueil(jeu));
@@ -334,13 +335,6 @@ public class EcranJeuPartieSolo implements Screen {
         camera.update();
         jeu.batch.setProjectionMatrix(camera.combined);
         jeu.batch.begin();
-
-
-
-
-        //imgPlateau.draw(jeu.batch,1);
-
-
         jeu.batch.end();
         stage.act(Gdx.graphics.getDeltaTime());
         stage.draw();

@@ -1,9 +1,5 @@
 package com.josstoh.morpion.screens;
 
-/**
- * Created by Jocelyn on 13/07/2014.
- */
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
@@ -11,6 +7,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -18,31 +15,24 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.josstoh.morpion.Jeu;
-import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 
 /**
- * Created by Jocelyn on 03/07/2014.
+ * Created by Jocelyn on 16/03/2015.
  */
-public class MenuAccueil implements Screen {
+public class EcranOptions implements Screen{
 
     Jeu jeu;
     OrthographicCamera camera;
     Stage stage;
-    TextButton bNouvellePartie;
-    TextButton bOptions;
-    TextButton bQuitter;
-    Image img;
     Skin skin;
+    // Bouton
+    TextButton gs,retour;
 
-    public MenuAccueil(final Jeu monJeu)
+
+    public EcranOptions(final Jeu monJeu)
     {
-        System.out.println(Gdx.app.getType());
-
         this.jeu = monJeu;
         this.skin = jeu.manager.get("data/uiskin/uiskin.json",Skin.class);
-
-        int largeur = Gdx.graphics.getWidth();
-        int hauteur = Gdx.graphics.getHeight();
 
         //Camera
         camera = new OrthographicCamera();
@@ -55,45 +45,29 @@ public class MenuAccueil implements Screen {
         table.setSize(jeu.posX(600), jeu.posY(960));
         table.setFillParent(true);
         stage.addActor(table);
-
-
-        LabelStyle styleTitre = new LabelStyle(skin.getFont("font_calibril_48pt_bold"),skin.getColor("Blanc"));
-        img = new Image(skin.getDrawable("icone"));
-        //img.addAction(Actions.sequence(Actions.delay(2), Actions.parallel(Actions.fadeIn(1), Actions.moveBy(100, 100, 2))));
-        //img.addAction(Actions.moveBy(-100, -100,2));
-        table.add(img).fill().pad(30).row();
-        table.pad(30);
-        table.row();
-        Label titre = new Label("Morpion",styleTitre);
-        table.add(titre).height(100).pad(30).row();
-
-        bNouvellePartie = new TextButton("Nouvelle Partie",skin);
-        table.add(bNouvellePartie).width(500).height(100).pad(30).row();
-        bOptions = new TextButton("Options",skin);
-        table.add(bOptions).width(500).height(100).pad(30).row();
-        bQuitter = new TextButton("Quitter",skin);
-        table.add(bQuitter).width(500).height(100).pad(30).row();
-
-
-        bNouvellePartie.addListener(new ChangeListener() {
+        gs = new TextButton("Déconnecté",skin);
+        if(Jeu.googleServices.isSignedIn())
+            gs.setText("Connecté");
+        gs.addListener(new ChangeListener() {
             public void changed(ChangeEvent event, Actor actor) {
-                jeu.setScreen(new EcranJeuPartieSolo(monJeu));
-                dispose();
+                if(!Jeu.googleServices.isSignedIn()){
+                    Jeu.googleServices.signIn();
+                    gs.setText("Connecté");
+                }
+
             }
         });
-        bOptions.addListener(new ChangeListener() {
+        table.add(gs).row();
+        retour = new TextButton("Retour",skin);
+        retour.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                jeu.setScreen(new EcranOptions(monJeu));
+                jeu.setScreen(new MenuAccueil(monJeu));
                 dispose();
             }
         });
+        table.add(retour);
 
-        bQuitter.addListener(new ChangeListener() {
-            public void changed(ChangeEvent event, Actor actor) {
-                Gdx.app.exit();
-            }
-        });
     }
     @Override
     public void render(float delta) {
@@ -137,7 +111,6 @@ public class MenuAccueil implements Screen {
     public void dispose() {
         System.out.println("MenuAccueil : dispose");
         stage.dispose();
-        //buttonAtlas.dispose();
     }
 }
 
