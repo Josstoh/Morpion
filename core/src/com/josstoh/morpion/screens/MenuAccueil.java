@@ -77,7 +77,8 @@ public class MenuAccueil implements Screen {
 
         bNouvellePartie.addListener(new ChangeListener() {
             public void changed(ChangeEvent event, Actor actor) {
-                jeu.setScreen(new EcranJeuPartieSolo(monJeu));
+                //jeu.setScreen(new EcranJeuPartieSolo(monJeu));
+                Jeu.googleServices.inviterJoueur();
                 dispose();
             }
         });
