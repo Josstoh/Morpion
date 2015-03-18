@@ -34,18 +34,25 @@ public class Jeu extends Game {
 
     public static IGoogleServices googleServices;
 
-    public Jeu(IGoogleServices googleServices)
+    public Jeu(IGoogleServices googleServices,int screen)
     {
         super();
         Jeu.googleServices = googleServices;
-        manager = new AssetManager();
-        manager.load("data/uiskin/uiskin.json",Skin.class);
-        manager.load("data/symboles.pack",TextureAtlas.class);
+        switch(screen)
+        {
+            default:    manager = new AssetManager();
+                        manager.load("data/uiskin/uiskin.json",Skin.class);
+                        manager.load("data/symboles.pack",TextureAtlas.class);
+                        break;
+
+        }
+
     }
 
     @Override
     public void create () {
 
+        System.out.println("Jeu : create");
         // Initialisations
         batch = new SpriteBatch();
         // Taille

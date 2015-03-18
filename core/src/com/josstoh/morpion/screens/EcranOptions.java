@@ -112,5 +112,6 @@ public class EcranOptions implements Screen{
         System.out.println("MenuAccueil : dispose");
         stage.dispose();
     }
+
 }
 

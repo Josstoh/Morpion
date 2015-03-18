@@ -17,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.josstoh.morpion.DialogFinDePartie;
 import com.josstoh.morpion.Jeu;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 
@@ -77,9 +78,24 @@ public class MenuAccueil implements Screen {
 
         bNouvellePartie.addListener(new ChangeListener() {
             public void changed(ChangeEvent event, Actor actor) {
-                //jeu.setScreen(new EcranJeuPartieSolo(monJeu));
-                Jeu.googleServices.inviterJoueur();
-                dispose();
+                DialogFinDePartie diag = new DialogFinDePartie("Mode de jeu",skin) {
+                    public void result(Object obj) {
+                        switch((Integer)obj)
+                        {
+                            case 0:     jeu.setScreen(new EcranJeuPartieSolo(jeu));
+                                        dispose();
+                                        break;
+
+                            case 1:     Jeu.googleServices.inviterJoueur();
+                                        dispose();
+                                        break;
+                        }
+                    }
+                };
+                diag.text("Choisissez un mode de jeu");
+                diag.button("Solo", 0);
+                diag.button("Multijoueur", 1);
+                diag.show(stage);
             }
         });
         bOptions.addListener(new ChangeListener() {
