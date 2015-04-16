@@ -2,8 +2,8 @@ package com.josstoh.morpion.desktop;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import com.josstoh.morpion.DesktopGoogleServices;
-import com.josstoh.morpion.Jeu;
+import com.josstoh.morpion.modele.DesktopGoogleServices;
+import com.josstoh.morpion.vue_controleur.Jeu;
 
 public class DesktopLauncher {
 	public static void main (String[] arg) {
