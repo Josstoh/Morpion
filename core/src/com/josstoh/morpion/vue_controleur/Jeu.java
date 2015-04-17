@@ -10,8 +10,10 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.josstoh.morpion.modele.IGoogleServices;
 import com.josstoh.morpion.vue_controleur.screens.Chargement;
+import com.josstoh.morpion.vue_controleur.screens.EcranJeuMulti;
 import com.josstoh.morpion.vue_controleur.screens.MenuAccueil;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 
@@ -21,6 +23,7 @@ public class Jeu extends Game {
     // Screen
     public MenuAccueil accueil;
     public Chargement chargement;
+    public EcranJeuMulti multi;
 
     public SpriteBatch batch;
     public BitmapFont font;
@@ -96,5 +99,9 @@ public class Jeu extends Game {
         return rand.nextInt(max - min + 1) + min;
     }
 
-
+    public void nouvelEcranMulti(Jeu monJeu, ArrayList<String> p)
+    {
+        multi = new EcranJeuMulti(monJeu,p);
+        setScreen(multi);
+    }
 }

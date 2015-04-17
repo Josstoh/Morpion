@@ -44,7 +44,7 @@ public class EcranJeuMulti implements Screen, Observer {
     public Skin skin;
     public ArrayList<String> participants;
 
-
+    int symb;
     // Labels
     Label titre;
     Label vs;
@@ -63,9 +63,14 @@ public class EcranJeuMulti implements Screen, Observer {
         participants = p;
         this.jeu = monJeu;
         this.skin = jeu.manager.get("data/uiskin/uiskin.json", Skin.class);
-        this.cellules = new Vector<ImageButton>();
+        this.cellules = new Vector<>();
         JoueurHumain joueur1 = Jeu.googleServices.creerJoueur(participants.get(0));
         JoueurHumain joueur2 = Jeu.googleServices.creerJoueur(participants.get(1));
+
+        if(Jeu.googleServices.obtenirMonParticipantId().equals(joueur1.getId()))
+            symb = 1;
+        else
+            symb = 2;
 
         morpion = new ThreadMorpionMultiEnLigne(joueur1, joueur2);
         morpion.plateau.addObserver(this);
@@ -136,7 +141,7 @@ public class EcranJeuMulti implements Screen, Observer {
 
         imgPlateau = new Sprite(skin.getSprite("plateau"));
         imgPlateau.setBounds(60, 400, 600, 600);
-        Gdx.app.log("EJM", participants.toString());
+        Gdx.app.log(TAG, participants.toString());
 
     }
 
@@ -214,9 +219,18 @@ public class EcranJeuMulti implements Screen, Observer {
 
     @Override
     public void update(Observable o, Object arg) {
+
         Gdx.app.log(TAG, "update");
         MAJCellules();
         String result;
+        if(numTour%2 == 1)
+        {
+            tour.setText("Tour de " + lJoueur1.getText());
+        }
+        else
+        {
+            tour.setText("Tour de " + lJoueur2.getText());
+        }
         int resultat = (int) arg;
         if (arg != -1) {
             if (resultat == 0) {
@@ -265,31 +279,31 @@ public class EcranJeuMulti implements Screen, Observer {
             if (j instanceof JoueurHumain) {
                 Gdx.app.log(TAG, "hoy");
                 if (i.equals(i1)) {
-                    c = new Coup(0, 0, 1);
+                    c = new Coup(0, 0, symb);
 
                 } else if (i.equals(i2)) {
-                    c = new Coup(0, 1, 1);
+                    c = new Coup(0, 1, symb);
 
                 } else if (i.equals(i3)) {
-                    c = new Coup(0, 2, 1);
+                    c = new Coup(0, 2, symb);
 
                 } else if (i.equals(i4)) {
-                    c = new Coup(1, 0, 1);
+                    c = new Coup(1, 0, symb);
 
                 } else if (i.equals(i5)) {
-                    c = new Coup(1, 1, 1);
+                    c = new Coup(1, 1, symb);
 
                 } else if (i.equals(i6)) {
-                    c = new Coup(1, 2, 1);
+                    c = new Coup(1, 2, symb);
 
                 } else if (i.equals(i7)) {
-                    c = new Coup(2, 0, 1);
+                    c = new Coup(2, 0, symb);
 
                 } else if (i.equals(i8)) {
-                    c = new Coup(2, 1, 1);
+                    c = new Coup(2, 1, symb);
 
                 } else if (i.equals(i9)) {
-                    c = new Coup(2, 2, 1);
+                    c = new Coup(2, 2, symb);
                 }
                 if (morpion.plateau.coupPossible(c)) {
                     j.setCoup(c);

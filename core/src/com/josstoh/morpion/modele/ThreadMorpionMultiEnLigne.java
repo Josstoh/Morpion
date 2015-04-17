@@ -7,10 +7,12 @@ import com.josstoh.morpion.vue_controleur.Jeu;
 import com.josstoh.morpion.modele.Joueur;
 import com.josstoh.morpion.modele.Plateau;
 
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 
 /**
  * Created by Jocelyn on 07/04/2015.
@@ -24,6 +26,7 @@ public class ThreadMorpionMultiEnLigne extends Thread{
 
     public ThreadMorpionMultiEnLigne(Joueur joueur1, Joueur joueur2)
     {
+        Gdx.app.log(TAG,"mon participant id : " + monId);
         joueurs = new Joueur[2];
         joueurs[0] = joueur1;
         joueurs[1] = joueur2;
@@ -43,6 +46,11 @@ public class ThreadMorpionMultiEnLigne extends Thread{
         return joueurs[0];
     }
 
+    public void majGrille(int[][] g)
+    {
+        plateau.grille = g;
+    }
+
     @Override
     public void run() {
 
@@ -51,14 +59,13 @@ public class ThreadMorpionMultiEnLigne extends Thread{
         while(plateau.checkVictoire()== -1)
         {
             // si joueur local
-            if(joueurs[0].getId() == monId)
+            if(monId.equals(joueurs[0].getId()))
             {
                 try {
-                    Gdx.app.log(TAG, "hey");
+                    Gdx.app.log(TAG, "Coup joueur local");
                     synchronized (this){
                         wait();
                     }
-                    Gdx.app.log(TAG,"ho");
 
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -70,9 +77,8 @@ public class ThreadMorpionMultiEnLigne extends Thread{
                 {
                     if(plateau.coupPossible(coup))
                     {
-                        Gdx.app.log(TAG,"coup possible");
+                        Gdx.app.log(TAG, "coup possible");
                         plateau.jouerCoup(coup);
-                        joueurSuivant();
                         Gdx.app.log(TAG,plateau.toString());
                         Gdx.app.log(TAG, "coup joué, joueur suivant");
                     }
@@ -80,40 +86,60 @@ public class ThreadMorpionMultiEnLigne extends Thread{
                 }
                 ByteArray m = new ByteArray();
                 m.add((byte)1);
-                ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                ObjectOutput out;
-                byte[] p = new byte[0];
+                byte[] p = null;
                 try
                 {
+                    /*ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                    ObjectOutput out;
                     out = new ObjectOutputStream(bos);
                     out.writeObject(plateau);
                     p = bos.toByteArray();
-                    if (out != null) {
-                        out.close();
-                    }
                     bos.close();
+                    out.close();*/
+                    ByteArrayOutputStream out = new ByteArrayOutputStream();
+                    ObjectOutputStream oout = new ObjectOutputStream(out);
+                    oout.writeObject(plateau);
+
+                    oout.flush();
+                    p = out.toByteArray();
+                    out.close();
 
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
+                if(p != null)
+                    Gdx.app.log(TAG,"taille bytes : " + p.length);
                 m.addAll(p, 0, p.length);
-                Gdx.app.log(TAG,"envoie d'un message fiable");
+                Gdx.app.log(TAG, "envoie d'un message fiable");
                 reponse = Jeu.googleServices.envoyerMessageFiable(m.shrink(), joueurs[1].getId());
-                Gdx.app.log(TAG,"message envoyé : " + (reponse != -1));
+                Gdx.app.log(TAG,"message envoyé de " + joueurs[0].getId() + " à " + joueurs[1].getId() + " : " + (reponse != -1) + " reponse : " + reponse);
+                joueurSuivant();
+                Gdx.app.log(TAG,"Tour adversaire");
             }
             // si joueur distant
             else
             {
+                try
+                {
+                    Gdx.app.log(TAG,"Tour adverse");
+                    synchronized (this) {
+                        wait();
+                    }
 
+                }
+                catch (InterruptedException e)
+                {
+                        e.printStackTrace();
+                }
+                Gdx.app.log(TAG,"l'adversaire a joué !");
+                joueurSuivant();
             }
+
         }
-
-
-
     }
-
-
 }
+
+
+
 
 

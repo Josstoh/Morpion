@@ -9,6 +9,7 @@ import android.view.WindowManager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
+import com.badlogic.gdx.utils.ByteArray;
 import com.google.android.gms.games.Games;
 import com.google.android.gms.games.GamesActivityResultCodes;
 import com.google.android.gms.games.GamesStatusCodes;
@@ -17,6 +18,7 @@ import com.google.android.gms.games.multiplayer.Multiplayer;
 import com.google.android.gms.games.multiplayer.Participant;
 import com.google.android.gms.games.multiplayer.realtime.RealTimeMessage;
 import com.google.android.gms.games.multiplayer.realtime.RealTimeMessageReceivedListener;
+import com.google.android.gms.games.multiplayer.realtime.RealTimeMultiplayer;
 import com.google.android.gms.games.multiplayer.realtime.Room;
 import com.google.android.gms.games.multiplayer.realtime.RoomConfig;
 import com.google.android.gms.games.multiplayer.realtime.RoomStatusUpdateListener;
@@ -36,7 +38,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class AndroidLauncher extends AndroidApplication implements IGoogleServices,RoomUpdateListener,RealTimeMessageReceivedListener,RoomStatusUpdateListener {
+public class AndroidLauncher extends AndroidApplication implements IGoogleServices,RoomUpdateListener,RealTimeMessageReceivedListener,RoomStatusUpdateListener, RealTimeMultiplayer.ReliableMessageSentCallback {
 
     // message
     public final static int MSG_STARTEARLY = 0;
@@ -214,7 +216,7 @@ public class AndroidLauncher extends AndroidApplication implements IGoogleServic
                         @Override
                         public void run() {
 
-                            jeu.setScreen(new EcranJeuMulti(jeu,obtenirJoueurs()));
+                            jeu.nouvelEcranMulti(jeu, obtenirJoueurs());
                         }
                     });
                 } catch (Exception e) {
@@ -363,7 +365,7 @@ public class AndroidLauncher extends AndroidApplication implements IGoogleServic
     @Override
     public int envoyerMessageFiable(byte[] message, String destinataire) {
         Gdx.app.log(TAG,"Message fiable : tentative d'envoi");
-        return Games.RealTimeMultiplayer.sendReliableMessage(_gameHelper.getApiClient(), null, message, roomId, destinataire);
+        return Games.RealTimeMultiplayer.sendReliableMessage(_gameHelper.getApiClient(), this, message, roomId, destinataire);
     }
 
     @Override
@@ -523,35 +525,45 @@ public class AndroidLauncher extends AndroidApplication implements IGoogleServic
 
     @Override
     public void onRealTimeMessageReceived(RealTimeMessage rtm) {
-        log(TAG, "Message reçu");
+        Gdx.app.log(TAG, "Message reçu");
         byte[] message = rtm.getMessageData();
+        Gdx.app.log(TAG, "taille message" + message.length);
+        ByteArray ba = new ByteArray();
+        ba.addAll(message, 1, message.length - 1);
 
-        Plateau o = null;
+        Plateau p = null;
 
         if (message[0] == AndroidLauncher.MSG_STARTEARLY) {
+            Gdx.app.log(TAG, "message pour commencer plus tot");
             mWaitingRoomFinishedFromCode = true;
             finishActivity(RC_WAITING_ROOM);
         }
-        if(message[1] == 1)
+        if(message[0] == 1)
         {
-            ByteArrayInputStream bis = new ByteArrayInputStream(message);
-            ObjectInput in = null;
+            Gdx.app.log(TAG, "message contenant un plateau");
             try
             {
-                in = new ObjectInputStream(bis);
-                 o = (Plateau) in.readObject();
+                ByteArrayInputStream bis = new ByteArrayInputStream(ba.toArray());
+                ObjectInputStream in = new ObjectInputStream(bis);
+                 p = (Plateau) in.readObject();
                 bis.close();
-                if (in != null)
-                {
-                    in.close();
-                }
+
+                in.close();
+
             }
             catch (Exception ex)
             {
-                    // ignore close exception
+
+                //Gdx.app.log(TAG,ex.getMessage());
+                ex.printStackTrace();
 
             }
-            log(TAG,"Message reçu : " + o.toString());
+            Gdx.app.log(TAG, "Message reçu : " + p.toString());
+            jeu.multi.morpion.majGrille(p.grille);
+            synchronized (jeu.multi.morpion) {
+
+                jeu.multi.morpion.notify();
+            }
         }
     }
 
@@ -704,5 +716,25 @@ public class AndroidLauncher extends AndroidApplication implements IGoogleServic
             return list;
         }
         return null;
+    }
+
+    @Override
+    public void onRealTimeMessageSent(int statusCode, int tokenId, String destinataire) {
+        String s;
+        switch(statusCode)
+        {
+            case GamesStatusCodes.STATUS_OK:
+                s = "OK";
+                break;
+            case GamesStatusCodes.STATUS_REAL_TIME_MESSAGE_SEND_FAILED:
+                s = "FAILED";
+                break;
+            case GamesStatusCodes.STATUS_REAL_TIME_ROOM_NOT_JOINED:
+                s = "NOT JOINED";
+                break;
+            default:
+                s = null;
+        }
+        Gdx.app.log(TAG,"message fiable num " + tokenId + " envoyé à " + destinataire + "  statut : " + s);
     }
 }
