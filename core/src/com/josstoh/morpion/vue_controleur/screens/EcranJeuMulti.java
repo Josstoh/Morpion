@@ -15,14 +15,17 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.utils.ByteArray;
 import com.josstoh.morpion.vue_controleur.DialogFinDePartie;
 import com.josstoh.morpion.vue_controleur.Jeu;
 import com.josstoh.morpion.modele.ThreadMorpionMultiEnLigne;
 import com.josstoh.morpion.modele.Coup;
 import com.josstoh.morpion.modele.Joueur;
 import com.josstoh.morpion.modele.JoueurHumain;
-import com.josstoh.morpion.modele.Plateau;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
@@ -43,8 +46,10 @@ public class EcranJeuMulti implements Screen, Observer {
     public int numTour = 1;
     public Skin skin;
     public ArrayList<String> participants;
+    public String monId = Jeu.googleServices.obtenirMonParticipantId();
 
     int symb;
+    public boolean j1Rejouer = false;
     // Labels
     Label titre;
     Label vs;
@@ -60,8 +65,10 @@ public class EcranJeuMulti implements Screen, Observer {
 
 
     public EcranJeuMulti(Jeu monJeu, ArrayList<String> p) {
+
         participants = p;
         this.jeu = monJeu;
+        jeu.enJeu = true;
         this.skin = jeu.manager.get("data/uiskin/uiskin.json", Skin.class);
         this.cellules = new Vector<>();
         JoueurHumain joueur1 = Jeu.googleServices.creerJoueur(participants.get(0));
@@ -125,7 +132,7 @@ public class EcranJeuMulti implements Screen, Observer {
         grille.add(i9);
         titre = new Label("Morpion", labelStyle);
         table.add(titre).expandX().pad(30).colspan(3).row();
-        tour = new Label("Tour " + numTour, labelStyle);
+        tour = new Label("Tour de " + joueur1.getNom(), labelStyle);
         table.add(tour).colspan(3).pad(30).row();
         table.add().height(100).row();
         table.add(grille).width(600).height(600).colspan(3).row();
@@ -151,7 +158,6 @@ public class EcranJeuMulti implements Screen, Observer {
         Gdx.gl.glClearColor(0.1f, 0.25f, 0.5f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         MAJCellules();
-        tour.setText("Votre tour : " + numTour);
         camera.update();
         jeu.batch.setProjectionMatrix(camera.combined);
         jeu.batch.begin();
@@ -223,7 +229,7 @@ public class EcranJeuMulti implements Screen, Observer {
         Gdx.app.log(TAG, "update");
         MAJCellules();
         String result;
-        if(numTour%2 == 1)
+        if(numTour%2 == 0)
         {
             tour.setText("Tour de " + lJoueur1.getText());
         }
@@ -231,39 +237,81 @@ public class EcranJeuMulti implements Screen, Observer {
         {
             tour.setText("Tour de " + lJoueur2.getText());
         }
+        numTour++;
         int resultat = (int) arg;
-        if (arg != -1) {
+        if (resultat != -1) {
+            jeu.enJeu = false;
             if (resultat == 0) {
                 result = "Match Nul";
             } else {
-                if (resultat == 1) {
-                    result = "Victoire";
+                if (monId.equals(participants.get(0))) {
+                    if(resultat == 1)
+                        result = "Victoire";
+                    else
+                        result = "Défaite";
                 } else {
-                    result = "Défaite";
+                    if(resultat == 1)
+                        result = "Défaite";
+                    else
+                        result = "Victoire";
                 }
 
             }
             DialogFinDePartie diag = new DialogFinDePartie(result, skin) {
                 public void result(Object obj) {
+                    byte[] message = null;
                     switch ((Integer) obj) {
                         case 0:
-                            jeu.setScreen(new EcranJeuPartieSolo(jeu));
-                            dispose();
+                            if(monId.equals(participants.get(1)))
+                            {
+                                //message = Jeu.toMessage(Jeu.MSG_FINPARTIE_HOTE,0),TAG);
+                                ByteArray m = new ByteArray();
+                                m.add((byte)Jeu.MSG_FINPARTIE_HOTE);
+                                m.add((byte)0);
+                                m.shrink();
+                                message = m.shrink();
+                            }
+                            else {
+                                j1Rejouer = false;
+                                jeu.j1ReponseFinDePartie = true;
+                                if(jeu.j2ReponseFinDePartie)
+                                {
+                                    Jeu.googleServices.gererFinDePartie(Jeu.googleServices.obtenirReponseFinDePartie());
+                                }
+
+                            }
+
                             break;
+
                         case 1:
-                            Gdx.app.log(TAG, "cas 1");
+                            if(monId.equals(participants.get(1)))
+                            {
+                                //message = Jeu.toMessage(Jeu.MSG_FINPARTIE_HOTE,new Integer(1),TAG);
+                                ByteArray m = new ByteArray();
+                                m.add((byte)Jeu.MSG_FINPARTIE_HOTE);
+                                m.add((byte)1);
+                                m.shrink();
+                                message = m.shrink();
 
-                            jeu.setScreen(jeu.accueil);
-                            Gdx.input.setInputProcessor(jeu.accueil.stage);
+                            }
+                            else {
+                                j1Rejouer = true;
+                                jeu.j1ReponseFinDePartie = true;
+                                if(jeu.j2ReponseFinDePartie)
+                                {
+                                    Jeu.googleServices.gererFinDePartie(Jeu.googleServices.obtenirReponseFinDePartie());
+                                }
 
-                            dispose();
-                            break;
+                            }
                     }
+                    if(message != null)
+                        Jeu.googleServices.envoyerMessageFiable(message, participants.get(0));
+
                 }
             };
             diag.text("Fin de Partie");
-            diag.button("Nouvelle Partie", 0);
-            diag.button("Accueil", 1);
+            diag.button("Quitter", 0);
+            diag.button("Rejouer", 1);
             diag.show(stage);
         }
 
@@ -276,7 +324,7 @@ public class EcranJeuMulti implements Screen, Observer {
             Image i = (Image) event.getTarget();
             Joueur j = morpion.obtenirJoueurCourant();
             Coup c = null;
-            if (j instanceof JoueurHumain) {
+            if (j instanceof JoueurHumain && monId.equals(j.getId()) && jeu.enJeu) {
                 Gdx.app.log(TAG, "hoy");
                 if (i.equals(i1)) {
                     c = new Coup(0, 0, symb);

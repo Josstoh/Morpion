@@ -29,10 +29,8 @@ import com.josstoh.morpion.modele.IGoogleServices;
 import com.josstoh.morpion.vue_controleur.Jeu;
 import com.josstoh.morpion.modele.JoueurHumain;
 import com.josstoh.morpion.modele.Plateau;
-import com.josstoh.morpion.vue_controleur.screens.EcranJeuMulti;
 
 import java.io.ByteArrayInputStream;
-import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,37 +38,36 @@ import java.util.List;
 
 public class AndroidLauncher extends AndroidApplication implements IGoogleServices,RoomUpdateListener,RealTimeMessageReceivedListener,RoomStatusUpdateListener, RealTimeMultiplayer.ReliableMessageSentCallback {
 
-    // message
-    public final static int MSG_STARTEARLY = 0;
-
-    private GameHelper _gameHelper;
-    private final static int REQUEST_CODE_UNUSED = 9002;
-
-    private Jeu jeu;
-    final String TAG = "AndroidLauncher";
-
-    // Est-ce qu'on joue ?
-    boolean mPlaying = false;
-
-    // at least 2 players required for our game
-    final static int MIN_PLAYERS = 2;
+    // *******CONSTANTES***********
 
     // Activity RequestCode
     final static int RC_WAITING_ROOM = 10002;
     final static int RC_SELECT_PLAYERS = 10000;
-    private static final int RC_ACHIEVEMENTS = 10001;
+    final static int RC_ACHIEVEMENTS = 10001;
+
+    final static int MIN_PLAYERS = 2;
+    private final static int REQUEST_CODE_UNUSED = 9002;
+
+    // ***************************
+    private GameHelper _gameHelper;
+    private Jeu jeu;
+    final String TAG = "AndroidLauncher";
 
     String roomId;
     Room room = null;
     private String monPlayerId;
     boolean mWaitingRoomFinishedFromCode = false;
+    // Est-ce qu'on joue ?
+    boolean enJeu = false;
+    int reponse;
+
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         log(TAG, "onCreate()");
         super.onCreate(savedInstanceState);
-
+        jeu = new Jeu(this, 0);
         // Création du GameHelper
         _gameHelper = new GameHelper(this, GameHelper.CLIENT_GAMES);
         _gameHelper.enableDebugLog(false);
@@ -121,7 +118,6 @@ public class AndroidLauncher extends AndroidApplication implements IGoogleServic
     @Override
     protected void onStop() {
         log(TAG, "call onStop()");
-        //Games.RealTimeMultiplayer.leave(_gameHelper.getApiClient(), null, roomId);
         super.onStop();
         _gameHelper.onStop();
 
@@ -164,6 +160,7 @@ public class AndroidLauncher extends AndroidApplication implements IGoogleServic
                         @Override
                         public void run() {
                             jeu.setScreen(jeu.accueil);
+                            Gdx.input.setInputProcessor(jeu.accueil.stage);
                         }
                     });
                 } catch (Exception e) {
@@ -233,6 +230,7 @@ public class AndroidLauncher extends AndroidApplication implements IGoogleServic
                         public void run() {
 
                             jeu.setScreen(jeu.accueil);
+                            Gdx.input.setInputProcessor(jeu.accueil.stage);
                         }
                     });
                 } catch (Exception e) {
@@ -249,6 +247,7 @@ public class AndroidLauncher extends AndroidApplication implements IGoogleServic
                         public void run() {
 
                             jeu.setScreen(jeu.accueil);
+                            Gdx.input.setInputProcessor(jeu.accueil.stage);
                         }
                     });
                 } catch (Exception e) {
@@ -350,10 +349,7 @@ public class AndroidLauncher extends AndroidApplication implements IGoogleServic
     }
 
     public void inviterJoueur() {
-        // launch the player selection screen
-        // minimum: 1 other player; maximum: 3 other players
         Intent intent = Games.RealTimeMultiplayer.getSelectOpponentsIntent(_gameHelper.getApiClient(), 1, 1);
-
         startActivityForResult(intent, RC_SELECT_PLAYERS);
     }
 
@@ -364,7 +360,7 @@ public class AndroidLauncher extends AndroidApplication implements IGoogleServic
 
     @Override
     public int envoyerMessageFiable(byte[] message, String destinataire) {
-        Gdx.app.log(TAG,"Message fiable : tentative d'envoi");
+        Gdx.app.log(TAG, "Message fiable : tentative d'envoi");
         return Games.RealTimeMultiplayer.sendReliableMessage(_gameHelper.getApiClient(), this, message, roomId, destinataire);
     }
 
@@ -426,6 +422,18 @@ public class AndroidLauncher extends AndroidApplication implements IGoogleServic
     }
 
     @Override
+    public void quitterPartieMulti() {
+        Games.RealTimeMultiplayer.leave(_gameHelper.getApiClient(), this, roomId);
+        Gdx.app.postRunnable(new Runnable() {
+            @Override
+            public void run() {
+                jeu.setScreen(jeu.accueil);
+                Gdx.input.setInputProcessor(jeu.accueil.stage);
+            }
+        });
+    }
+
+    @Override
     public void onRoomCreated(int statusCode, Room room) {
         this.room = room;
         if (statusCode != GamesStatusCodes.STATUS_OK) {
@@ -440,6 +448,7 @@ public class AndroidLauncher extends AndroidApplication implements IGoogleServic
                     public void run() {
 
                         jeu.setScreen(jeu.accueil);
+                        Gdx.input.setInputProcessor(jeu.accueil.stage);
                     }
                 });
             } catch (Exception e) {
@@ -469,6 +478,7 @@ public class AndroidLauncher extends AndroidApplication implements IGoogleServic
                     public void run() {
 
                         jeu.setScreen(jeu.accueil);
+                        Gdx.input.setInputProcessor(jeu.accueil.stage);
                     }
                 });
             } catch (Exception e) {
@@ -495,6 +505,7 @@ public class AndroidLauncher extends AndroidApplication implements IGoogleServic
                 @Override
                 public void run() {
                     jeu.setScreen(jeu.accueil);
+                    Gdx.input.setInputProcessor(jeu.accueil.stage);
                 }
             });
         }
@@ -513,8 +524,8 @@ public class AndroidLauncher extends AndroidApplication implements IGoogleServic
                 Gdx.app.postRunnable(new Runnable() {
                     @Override
                     public void run() {
-
                         jeu.setScreen(jeu.accueil);
+                        Gdx.input.setInputProcessor(jeu.accueil.stage);
                     }
                 });
             } catch (Exception e) {
@@ -533,12 +544,12 @@ public class AndroidLauncher extends AndroidApplication implements IGoogleServic
 
         Plateau p = null;
 
-        if (message[0] == AndroidLauncher.MSG_STARTEARLY) {
+        if (message[0] == Jeu.MSG_STARTEARLY) {
             Gdx.app.log(TAG, "message pour commencer plus tot");
             mWaitingRoomFinishedFromCode = true;
             finishActivity(RC_WAITING_ROOM);
         }
-        if(message[0] == 1)
+        if(message[0] == Jeu.MSG_PLATEAU)
         {
             Gdx.app.log(TAG, "message contenant un plateau");
             try
@@ -558,12 +569,43 @@ public class AndroidLauncher extends AndroidApplication implements IGoogleServic
                 ex.printStackTrace();
 
             }
-            Gdx.app.log(TAG, "Message reçu : " + p.toString());
+            //Gdx.app.log(TAG, "Message reçu : " + p.toString());
             jeu.multi.morpion.majGrille(p.grille);
             synchronized (jeu.multi.morpion) {
 
                 jeu.multi.morpion.notify();
             }
+        }
+        if(message[0] == Jeu.MSG_FINPARTIE_HOTE)
+        {
+            Gdx.app.log(TAG,"MSG_FINPARTIE_HOTE : j2 a réponsu");
+            jeu.j2ReponseFinDePartie = true;
+            reponse = (int) message[1];
+            Gdx.app.log(TAG,"reponse j2 " + reponse);
+            if(jeu.j1ReponseFinDePartie)
+            {
+                Gdx.app.log(TAG,"MSG_FINPARTIE_HOTE : j1 a répondu");
+                gererFinDePartie(reponse);
+            }
+
+
+        }
+        if(message[0] == Jeu.MSG_FINPARTIE_CLIENT)
+        {
+            int reponse = (int) message[1];
+            if(reponse == 1)
+            {
+                Gdx.app.postRunnable(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        jeu.nouvelEcranMulti(jeu, obtenirJoueurs());
+                    }
+                });
+            }
+            else
+                quitterPartieMulti();
+
         }
     }
 
@@ -589,7 +631,7 @@ public class AndroidLauncher extends AndroidApplication implements IGoogleServic
     public void onPeerDeclined(Room room, List<String> strings) {
         this.room = room;
         // peer declined invitation -- see if game should be canceled
-        if (!mPlaying && shouldCancelGame(room)) {
+        if (!enJeu && shouldCancelGame(room)) {
             Games.RealTimeMultiplayer.leave(_gameHelper.getApiClient(), null, room.getRoomId());
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
@@ -605,7 +647,7 @@ public class AndroidLauncher extends AndroidApplication implements IGoogleServic
     public void onPeerLeft(Room room, List<String> strings) {
         this.room = room;
         // peer left -- see if game should be canceled
-        if (!mPlaying && shouldCancelGame(room)) {
+        if (!enJeu && shouldCancelGame(room)) {
             Games.RealTimeMultiplayer.leave(_gameHelper.getApiClient(), null, room.getRoomId());
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
@@ -626,7 +668,7 @@ public class AndroidLauncher extends AndroidApplication implements IGoogleServic
     @Override
     public void onPeersConnected(Room room, List<String> strings) {
         this.room = room;
-        if (mPlaying) {
+        if (enJeu) {
             // add new player to an ongoing game
         } else if (shouldStartGame(room)) {
             // start game!
@@ -636,7 +678,7 @@ public class AndroidLauncher extends AndroidApplication implements IGoogleServic
     @Override
     public void onPeersDisconnected(Room room, List<String> strings) {
         this.room = room;
-        if (mPlaying) {
+        if (enJeu) {
             // do game-specific handling of this -- remove player's avatar
             // from the screen, etc. If not enough players are left for
             // the game to go on, end the game and leave the room.
@@ -684,18 +726,6 @@ public class AndroidLauncher extends AndroidApplication implements IGoogleServic
         // prevent screen from sleeping during handshake
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        // go to game screen
-        /*try {
-            Gdx.app.postRunnable(new Runnable() {
-                @Override
-                public void run() {
-
-                    jeu.setScreen(new MenuAccueil(jeu));
-                }
-            });
-        } catch (Exception e) {
-            Gdx.app.log("MainActivity", "Log in failed: " + e.getMessage() + ".");
-        }*/
     }
 
     ArrayList<String> obtenirJoueurs()
@@ -716,6 +746,39 @@ public class AndroidLauncher extends AndroidApplication implements IGoogleServic
             return list;
         }
         return null;
+    }
+
+    @Override
+    public void gererFinDePartie(int reponse)
+    {
+        Gdx.app.log(TAG,"gérer fin de partie : j1 " + jeu.multi.j1Rejouer + " j2 " + reponse);
+        jeu.j2ReponseFinDePartie = false;
+        jeu.j1ReponseFinDePartie = false;
+
+        if(jeu.multi.j1Rejouer && reponse == 1)
+        {
+            //envoyerMessageFiable(Jeu.toMessage(Jeu.MSG_FINPARTIE_CLIENT,1,TAG),obtenirJoueurs().get(1));
+            ByteArray m = new ByteArray();
+            m.add((byte)Jeu.MSG_FINPARTIE_CLIENT);
+            m.add((byte)1);
+            m.shrink();
+            envoyerMessageFiable(m.shrink(),obtenirJoueurs().get(1));
+            Gdx.app.postRunnable(new Runnable() {
+                @Override
+                public void run() {
+
+                    jeu.nouvelEcranMulti(jeu, obtenirJoueurs());
+                }
+            });
+        }
+        else
+            quitterPartieMulti();
+
+    }
+
+    @Override
+    public int obtenirReponseFinDePartie() {
+        return reponse;
     }
 
     @Override

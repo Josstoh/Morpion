@@ -23,6 +23,8 @@ public interface IGoogleServices
     String obtenirMonParticipantId();
     JoueurHumain creerJoueur(String participantID);
     JoueurHumain obtenirJoueurLocal();
-
+    void quitterPartieMulti();
+    void gererFinDePartie(int reponse);
+    int obtenirReponseFinDePartie();
 
 }

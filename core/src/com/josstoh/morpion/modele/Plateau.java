@@ -100,6 +100,17 @@ public class Plateau extends Observable implements Serializable {
         return -1;
     }
 
+    public int[][] getGrille() {
+        return grille;
+    }
+
+    public void setGrille(int[][] grille) {
+        this.grille = grille;
+        setChanged();
+        notifyObservers(checkVictoire());
+
+    }
+
     @Override
     public String toString() {
         String s = "";

@@ -220,8 +220,9 @@ public class EcranJeuPartieSolo implements Screen,Observer{
         Gdx.app.log(TAG,"update");
         MAJCellules();
         String result;
+
         int resultat = (int)arg;
-        if(arg != -1)
+        if(resultat != -1)
         {
             if (resultat == 0)
             {

@@ -48,7 +48,7 @@ public class ThreadMorpionMultiEnLigne extends Thread{
 
     public void majGrille(int[][] g)
     {
-        plateau.grille = g;
+        plateau.setGrille(g);
     }
 
     @Override
@@ -84,34 +84,8 @@ public class ThreadMorpionMultiEnLigne extends Thread{
                     }
 
                 }
-                ByteArray m = new ByteArray();
-                m.add((byte)1);
-                byte[] p = null;
-                try
-                {
-                    /*ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                    ObjectOutput out;
-                    out = new ObjectOutputStream(bos);
-                    out.writeObject(plateau);
-                    p = bos.toByteArray();
-                    bos.close();
-                    out.close();*/
-                    ByteArrayOutputStream out = new ByteArrayOutputStream();
-                    ObjectOutputStream oout = new ObjectOutputStream(out);
-                    oout.writeObject(plateau);
-
-                    oout.flush();
-                    p = out.toByteArray();
-                    out.close();
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                if(p != null)
-                    Gdx.app.log(TAG,"taille bytes : " + p.length);
-                m.addAll(p, 0, p.length);
                 Gdx.app.log(TAG, "envoie d'un message fiable");
-                reponse = Jeu.googleServices.envoyerMessageFiable(m.shrink(), joueurs[1].getId());
+                reponse = Jeu.googleServices.envoyerMessageFiable(Jeu.toMessage(Jeu.MSG_PLATEAU, plateau,TAG), joueurs[1].getId());
                 Gdx.app.log(TAG,"message envoyé de " + joueurs[0].getId() + " à " + joueurs[1].getId() + " : " + (reponse != -1) + " reponse : " + reponse);
                 joueurSuivant();
                 Gdx.app.log(TAG,"Tour adversaire");
